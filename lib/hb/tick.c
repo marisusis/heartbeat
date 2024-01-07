@@ -4,7 +4,7 @@
 hb_tick* hb_tick_malloc() {
     hb_tick* tick = malloc(sizeof(hb_tick));
     tick->data = NULL;
-    tick->data_count = 0;
+    tick->header.data_count = 0;
     return tick;
 }
 
@@ -16,53 +16,40 @@ void hb_tick_free(hb_tick* tick) {
     free(tick);
 }
 
-hb_tick* hb_parse_tick(uint8_t* data, size_t len) {
-    hb_tick* tick = hb_tick_malloc();
+hb_tick hb_parse_tick(uint8_t* data, size_t len) {
+    hb_tick tick;
 
-    for (size_t i = 0; i < len; i += 2) {
-        tick->data[tick->data_count++] = (data[i] << 8) | data[i + 1];
+    tick.header = parse_tick_header(data);
+    printf("Tick header magic: %x\n", tick.header.magic);
+    printf("Tick header timestamp: %d\n", tick.header.utc_timestamp);
+    printf("Tick header checksum: %x\n", tick.header.checksum);
+    printf("Tick header data count: %d\n", tick.header.data_count);
+
+    tick.data = malloc(tick.header.data_count * sizeof(uint16_t));
+
+    data += sizeof(hb_tick_header);
+
+    for (size_t i = 0; i < tick.header.data_count; i++) {
+        // tick.data[i] = bytes_to_uint16(data);
+        // printf("%d\n", i);
     }
 
     return tick;
 }
 
-// hb_tick* hb_parse_tick(char* line, size_t len) {
-//     size_t index = 0;
-//     size_t data_index = 0;
-//     uint16_t* data = malloc(len / 5 * sizeof(uint16_t));
 
-//     if (data == NULL) {
-//         exit(1);
-//     }
+hb_tick_header parse_tick_header(uint8_t* data) {
+    hb_tick_header header;
+    header.magic = bytes_to_uint16(data);
+    header.utc_timestamp = bytes_to_uint32(data += sizeof(uint16_t));
+    header.checksum = bytes_to_uint16(data += sizeof(uint32_t));
+    header.data_count = bytes_to_uint32(data += sizeof(uint16_t));
+    return header;
+}
 
-//     hb_tick* tick = hb_tick_malloc();
-
-//     // Parse time
-//     while (line[index] != ',') {
-//         index++;
-//     }
-
-//     index++;
-
-//     // max number is 1024
-//     while (index < len) {
-//         char parsed_number[4];
-//         memset(parsed_number, 0, 4);
-//         uint8_t parse_index = 0;
-
-//         while (line[index] != ',' && index < len) {
-//             parsed_number[parse_index++] = line[index];
-//             index++;
-//         }
-
-//         data[data_index++] = (uint16_t) atoi(parsed_number);
-        
-//         index++;
-//     }
-
-//     tick->data = data;
-//     tick->data_count = data_index;
-
-//     return tick;
-// }
-
+void tick_header_to_bytes(hb_tick_header header, uint8_t* bytes) {
+    uint16_to_bytes(header.magic, bytes);
+    uint32_to_bytes(header.utc_timestamp, bytes += sizeof(uint16_t));
+    uint16_to_bytes(header.checksum, bytes += sizeof(uint32_t));
+    uint32_to_bytes(header.data_count, bytes += sizeof(uint16_t));
+}

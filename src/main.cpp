@@ -12,12 +12,13 @@ int main(int argc, char** argv) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE); 
     InitWindow(800, 450, "heartbeat");
 
+    hb_file* file = hb_file_open("./test1.hb");
+
+    for (int i = 0; i < file->header.tick_count; i++) {
+        hb_tick tick = file->ticks[i];
+        printf("%d: %d\n", i, tick.header.magic);
+    }
+
     SetTargetFPS(120);
 
-    hb_tick* tick = hb_tick_malloc();
-
-    uint16_t a = 1024;
-    uint16_t b = 123;
-    // uint16_t b = bytes_to_uint16(uint16_to_bytes(a));
-    std::printf("a: %d, b: %d\n", a, b);
 }
