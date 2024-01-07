@@ -44,7 +44,6 @@ hb_file* hb_file_open(char* filename) {
         printf("Tick Header Data Count: %d\n", tick_header.data_count);
 
         // fseek(file, tick_header.data_count * 2, SEEK_CUR);
-        printf("ticks: %x\n", hb_file->ticks);
         hb_tick tick;
         tick.header = tick_header;
         tick.data = malloc(tick_header.data_count * sizeof(uint16_t));
@@ -58,16 +57,6 @@ hb_file* hb_file_open(char* filename) {
 
         hb_file->ticks[i] = tick;
     }
-
-    uint8_t* tick_header_bytes = malloc(sizeof(hb_tick_header));
-    if (fread(tick_header_bytes, sizeof(hb_tick_header), 1, file) < 1) {
-        hb_file_close(hb_file);
-        return NULL;
-    }
-    hb_tick_header tick_header = parse_tick_header(tick_header_bytes);
-    free(tick_header_bytes);
-
-
 
     return hb_file;
 }

@@ -12,12 +12,11 @@ int main(int argc, char** argv) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE); 
     InitWindow(800, 450, "heartbeat");
 
-    hb_file* file = hb_file_open("./test1.hb");
+    hb_file* file = hb_file_open("./test1.hb"); 
 
-    for (int i = 0; i < file->header.tick_count; i++) {
-        hb_tick tick = file->ticks[i];
-        printf("%d: %d\n", i, tick.header.magic);
-    }
+    
+
+    hb_file_close(file);
 
     SetTargetFPS(120);
 
