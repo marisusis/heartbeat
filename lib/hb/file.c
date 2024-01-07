@@ -3,9 +3,6 @@
 hb_file* hb_file_open(char* filename) {
     FILE* file = fopen(filename, "rw");
     hb_file* hb_file = hb_file_malloc();
-
-    
-
     hb_file->source_file = file;
     return hb_file;
 }

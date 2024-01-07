@@ -7,6 +7,11 @@
 #define HB_FILE_CODE 0x69
 #define HB_HEADER_LINE 0xa1
 
+uint8_t* uint16_to_bytes(uint16_t number);
+uint8_t* uint32_to_bytes(uint32_t number);
+uint16_t bytes_to_uint16(uint8_t* bytes);
+uint32_t bytes_to_uint32(uint8_t* bytes);
+
 typedef struct hb_tick {
     uint32_t timestamp;
     uint32_t data_count;
